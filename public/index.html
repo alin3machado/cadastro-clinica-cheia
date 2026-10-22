@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ff1a08">
+<title>Receba o e-book | Clínica Cheia, Faturamento Maior?</title>
+<style>
+:root{--red:#ff1a08;--black:#111;--gray:#f2f2f2;--white:#fff;--muted:#666}
+*{box-sizing:border-box}body{margin:0;background:var(--gray);color:var(--black);font:16px/1.5 Arial,Helvetica,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:24px 16px 44px}.card{background:white;border-radius:16px;padding:clamp(20px,5vw,36px);box-shadow:0 8px 28px #0000000d}
+.brand{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.12em;border-left:4px solid var(--red);padding-left:10px;margin-bottom:18px}
+h1{font-size:clamp(28px,6vw,40px);line-height:1.1;margin:0 0 12px}h1 span{color:var(--red)}.lead{color:#444;margin:0 0 24px}
+.progress{height:6px;background:#eee;border-radius:8px;overflow:hidden;margin:0 0 22px}.bar{height:100%;width:0;background:var(--red);transition:width .2s}
+fieldset{border:0;padding:0;margin:0}legend{font-size:20px;font-weight:700;margin-bottom:18px}
+.field{margin:0 0 17px}label,.qtitle{display:block;font-weight:700;margin-bottom:7px}.hint{font-size:13px;color:var(--muted);font-weight:400}
+input,select,textarea{width:100%;font:inherit;padding:13px 12px;border:1px solid #ccc;border-radius:9px;background:#fff;color:#111}input:focus,select:focus,textarea:focus{outline:2px solid #ff1a0840;border-color:var(--red)}
+.options{display:grid;gap:9px}.option{display:flex;align-items:flex-start;gap:9px;border:1px solid #ddd;border-radius:9px;padding:11px;font-weight:400}.option input{width:auto;margin-top:5px;accent-color:var(--red)}
+.actions{display:flex;gap:10px;margin-top:22px}.btn{border:0;border-radius:9px;padding:13px 18px;font-weight:700;font-size:16px;cursor:pointer}.primary{background:var(--red);color:#fff;flex:1}.secondary{background:#eee;color:#111}.step{display:none}.step.active{display:block}.error{color:#b00020;margin-top:12px}.success{display:none;text-align:center;padding:20px 0}.success h2{font-size:28px}.fine{font-size:12px;color:#666;margin-top:18px}.consent{font-weight:400}.required{color:var(--red)}@media(min-width:600px){.wrap{padding-top:42px}}
+</style>
+</head>
+<body><main class="wrap"><section class="card">
+<div class="brand">E-BOOK GRATUITO</div>
+<div id="formArea">
+<h1>Clínica Cheia,<br><span>Faturamento Maior?</span></h1>
+<p class="lead">Preencha o cadastro para receber o guia estratégico por e-mail e WhatsApp. Leva poucos minutos.</p>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<form id="signup" novalidate>
+<div class="step active" data-step="0"><fieldset><legend>1. Conhecendo você</legend>
+<div class="field"><label for="full_name">1. Nome completo <span class="required">*</span></label><input id="full_name" name="full_name" autocomplete="name" required></div>
+<div class="field"><label for="whatsapp">2. WhatsApp com DDD <span class="required">*</span></label><input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" required placeholder="(11) 99999-9999"></div>
+<div class="field"><label for="email">3. E-mail <span class="required">*</span></label><input id="email" name="email" type="email" autocomplete="email" required></div>
+<div class="field"><label for="city">4. Cidade <span class="required">*</span></label><input id="city" name="city" autocomplete="address-level2" required></div>
+<div class="field"><label for="state">5. Estado <span class="required">*</span></label><select id="state" name="state" required><option value="">Selecione</option><option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option></select></div>
+<div class="field"><label for="professional_role">6. Qual é sua função na clínica? <span class="required">*</span></label><select id="professional_role" name="professional_role" required><option value="">Selecione</option><option>Proprietária/gestora</option><option>Profissional que realiza atendimentos</option><option>Responsável técnica</option><option>Administrativo/recepção</option><option>Outra</option></select></div>
+<div class="actions"><button class="btn primary" type="button" data-next>Continuar</button></div></fieldset></div>
+<div class="step" data-step="1"><fieldset><legend>2. Perfil profissional e da clínica</legend>
+<div class="field"><label for="professional_training">7. Qual é sua formação profissional? <span class="required">*</span></label><select id="professional_training" name="professional_training" required><option value="">Selecione</option><option>Biomedicina</option><option>Biologia</option><option>Enfermagem</option><option>Farmácia</option><option>Fisioterapia</option><option>Medicina</option><option>Odontologia (dentista)</option><option>Estética e Cosmética</option><option>Medicina Veterinária</option><option>Outra</option></select></div>
+<div class="field"><label for="advanced_aesthetics_postgrad">8. Possui pós-graduação voltada para estética avançada ou aplicação de injetáveis? <span class="required">*</span></label><select id="advanced_aesthetics_postgrad" name="advanced_aesthetics_postgrad" required><option value="">Selecione</option><option>Sim</option><option>Não</option><option>Em andamento</option></select></div>
+<div class="field"><label for="clinic_duration">9. Há quanto tempo sua clínica está em funcionamento? <span class="required">*</span></label><select id="clinic_duration" name="clinic_duration" required><option value="">Selecione</option><option>Ainda não tenho clínica</option><option>Menos de 1 ano</option><option>1 a 3 anos</option><option>4 a 6 anos</option><option>7 anos ou mais</option></select></div>
+<div class="field"><label for="patients_per_month">10. Quantos pacientes atende por mês? <span class="required">*</span></label><select id="patients_per_month" name="patients_per_month" required><option value="">Selecione</option><option>Até 20</option><option>21 a 50</option><option>51 a 100</option><option>101 a 200</option><option>Mais de 200</option><option>Não sei informar</option></select></div>
+<div class="field"><label for="treatments_most_performed">11. Quais tratamentos mais realiza? <span class="required">*</span></label><textarea id="treatments_most_performed" name="treatments_most_performed" rows="3" required placeholder="Conte os principais tratamentos"></textarea></div>
+<div class="field"><label for="ticket_medio">12. Qual é o ticket médio aproximado da clínica? <span class="hint">(opcional)</span></label><select id="ticket_medio" name="ticket_medio"><option value="">Prefiro não informar</option><option>Até R$ 150</option><option>R$ 151 a R$ 300</option><option>R$ 301 a R$ 600</option><option>R$ 601 a R$ 1.000</option><option>Acima de R$ 1.000</option><option>Não sei informar</option></select></div>
+<div class="actions"><button class="btn secondary" type="button" data-prev>Voltar</button><button class="btn primary" type="button" data-next>Continuar</button></div></fieldset></div>
+<div class="step" data-step="2"><fieldset><legend>3. Objetivos e desafios</legend>
+<div class="field"><label for="clinic_ownership_role">13. Como você participa das decisões da clínica? <span class="required">*</span></label><select id="clinic_ownership_role" name="clinic_ownership_role" required><option value="">Selecione</option><option>Decido sozinha</option><option>Decido com sócios/equipe</option><option>Influencio, mas não decido</option><option>Não participo das decisões</option></select></div>
+<div class="field"><label for="commercial_challenge">14. Qual é hoje o principal desafio comercial da clínica? <span class="required">*</span></label><select id="commercial_challenge" name="commercial_challenge" required><option value="">Selecione</option><option>Atrair novos pacientes</option><option>Converter contatos em agendamentos</option><option>Reduzir faltas e cancelamentos</option><option>Fidelizar e reativar pacientes</option><option>Aumentar o ticket médio</option><option>Precificar os procedimentos</option><option>Organizar a gestão e acompanhar indicadores</option><option>Outro</option></select></div>
+<div class="field"><label for="main_goal">15. Qual resultado gostaria de melhorar primeiro? <span class="required">*</span></label><select id="main_goal" name="main_goal" required><option value="">Selecione</option><option>Aumentar o faturamento</option><option>Ter uma agenda mais previsível</option><option>Melhorar a conversão de contatos</option><option>Aumentar o ticket médio</option><option>Melhorar a rentabilidade</option><option>Organizar processos e indicadores</option></select></div>
+<div class="field"><label class="option consent"><input type="checkbox" name="commercial_consent" value="yes"> Aceito receber conteúdos e comunicações comerciais por WhatsApp e e-mail. Posso retirar esta autorização a qualquer momento.</label></div>
+<p class="fine">Seus dados serão usados para enviar o e-book e administrar seu cadastro. A autorização para mensagens comerciais é opcional e não condiciona o recebimento do material. Consulte o aviso de privacidade da responsável pelo formulário antes de publicar.</p>
+<div class="actions"><button class="btn secondary" type="button" data-prev>Voltar</button><button class="btn primary" type="submit">QUERO RECEBER O E-BOOK</button></div>
+<div id="error" class="error" role="alert"></div></fieldset></div>
+</form></div>
+<div class="success" id="success" role="status"><h2>Cadastro confirmado! ❤️</h2><p>Obrigada pelo seu interesse no e-book <strong>Clínica Cheia, Faturamento Maior?</strong></p><p id="deliveryMessage">Seu cadastro foi recebido.</p><p>Se também informou seu e-mail, confira sua caixa de entrada.</p></div>
+</section></main>
+<script>
+const form=document.querySelector('#signup'),steps=[...document.querySelectorAll('.step')],bar=document.querySelector('#bar');let current=0;
+function show(n){current=n;steps.forEach((s,i)=>s.classList.toggle('active',i===n));bar.style.width=((n+1)/steps.length*100)+'%';document.querySelector('.card').scrollIntoView({behavior:'smooth',block:'start'});}
+function validStep(){const fields=[...steps[current].querySelectorAll('input,select,textarea')].filter(e=>e.required);for(const f of fields){if(!f.checkValidity()){f.reportValidity();return false;}}return true;}
+document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{if(validStep())show(Math.min(current+1,steps.length-1));}));
+document.querySelectorAll('[data-prev]').forEach(b=>b.addEventListener('click',()=>show(Math.max(0,current-1))));
+form.addEventListener('submit',async e=>{e.preventDefault();if(!validStep())return;const btn=form.querySelector('[type=submit]');btn.disabled=true;btn.textContent='Enviando...';const data=Object.fromEntries(new FormData(form).entries());data.commercial_consent=form.elements.commercial_consent.checked;try{const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const j=await r.json();if(!r.ok)throw new Error(j.error||'Não foi possível enviar. Tente novamente.');document.querySelector('#formArea').style.display='none';document.querySelector('#success').style.display='block';document.querySelector('#deliveryMessage').textContent=j.whatsapp_sent?'Você receberá o e-book pelo WhatsApp dentro de alguns minutos.':(j.whatsapp_configured?'Seu cadastro foi recebido, mas não conseguimos confirmar o envio pelo WhatsApp. Nossa equipe verificará o envio.':'Seu cadastro foi recebido. O envio automático pelo WhatsApp ainda está sendo configurado; você receberá o e-book assim que essa etapa for ativada.');}catch(err){document.querySelector('#error').textContent=err.message||'Falha de conexão. Tente novamente.';btn.disabled=false;btn.textContent='QUERO RECEBER O E-BOOK';}});
+</script></body></html>

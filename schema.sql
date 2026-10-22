@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS registrations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  full_name TEXT NOT NULL,
+  whatsapp TEXT NOT NULL,
+  city TEXT NOT NULL,
+  state TEXT NOT NULL,
+  professional_role TEXT NOT NULL,
+  professional_training TEXT NOT NULL,
+  advanced_aesthetics_postgrad TEXT NOT NULL,
+  clinic_duration TEXT NOT NULL,
+  patients_per_month TEXT NOT NULL,
+  treatments_most_performed TEXT NOT NULL,
+  ticket_medio TEXT,
+  clinic_ownership_role TEXT NOT NULL,
+  commercial_challenge TEXT NOT NULL,
+  main_goal TEXT NOT NULL,
+  email TEXT NOT NULL,
+  commercial_consent INTEGER NOT NULL DEFAULT 0,
+  privacy_notice_version TEXT NOT NULL DEFAULT 'v1'
+);
