@@ -1,4 +1,3 @@
-
 name = "cadastro-clinica-cheia"
 pages_build_output_dir = "./public"
 compatibility_date = "2026-10-22"
