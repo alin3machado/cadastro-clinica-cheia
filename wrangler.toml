@@ -1,8 +1,9 @@
+
 name = "cadastro-clinica-cheia"
 pages_build_output_dir = "./public"
 compatibility_date = "2026-10-22"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "cadastro-clinica-cheia"
-database_id = "PREENCHA_COM_O_DATABASE_ID_DO_CLOUDFLARE"
+database_name = "clinica-cheia-leads"
+database_id = "14bce6f1-ec05-48cd-9736-ff3d50782e72"
