@@ -25,44 +25,91 @@ export async function onRequestPost({ request, env }) {
 
   // The ebook delivery is transactional and independent of optional commercial-marketing consent.
   // The message template must be approved in WhatsApp Manager and secrets configured in Cloudflare.
-  const waConfigured = !!(env.WHATSAPP_TOKEN && env.WHATSAPP_PHONE_NUMBER_ID &&
-    env.WHATSAPP_TEMPLATE_NAME && env.EBOOK_PUBLIC_URL);
+  
+  // Diagnóstico seguro: nunca registrar tokens ou o número do cliente.
+  const waConfigured = !!(
+    env.WHATSAPP_TOKEN &&
+    env.WHATSAPP_PHONE_NUMBER_ID &&
+    env.WHATSAPP_TEMPLATE_NAME &&
+    env.EBOOK_PUBLIC_URL
+  );
+
+  console.log("WhatsApp config:", {
+    configured: waConfigured,
+    hasToken: !!env.WHATSAPP_TOKEN,
+    hasPhoneNumberId: !!env.WHATSAPP_PHONE_NUMBER_ID,
+    hasTemplateName: !!env.WHATSAPP_TEMPLATE_NAME,
+    hasEbookUrl: !!env.EBOOK_PUBLIC_URL
+  });
+
   let whatsappSent = false;
+
   if (waConfigured) {
     try {
       const phone = digits.startsWith("55") ? digits : `55${digits}`;
       const version = env.META_GRAPH_API_VERSION || "v23.0";
-      const response = await fetch(`https://graph.facebook.com/${version}/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${env.WHATSAPP_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          messaging_product: "whatsapp",
-          to: phone,
-          type: "template",
-          template: {
-            name: env.WHATSAPP_TEMPLATE_NAME,
-            language: { code: env.WHATSAPP_TEMPLATE_LANGUAGE || "pt_BR" },
-            components: [{
-              type: "body",
-              parameters: [
-                { type: "text", text: String(body.full_name).trim().split(/\s+/)[0] },
-                { type: "text", text: env.EBOOK_PUBLIC_URL }
-              ]
-            }]
-          }
-        })
-      });
+
+      const response = await fetch(
+        `https://graph.facebook.com/${version}/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${env.WHATSAPP_TOKEN}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            messaging_product: "whatsapp",
+            to: phone,
+            type: "template",
+            template: {
+              name: env.WHATSAPP_TEMPLATE_NAME,
+              language: {
+                code: env.WHATSAPP_TEMPLATE_LANGUAGE || "pt_BR"
+              },
+              components: [{
+                type: "body",
+                parameters: [
+                  {
+                    type: "text",
+                    text: String(body.full_name).trim().split(/\s+/)[0]
+                  },
+                  {
+                    type: "text",
+                    text: env.EBOOK_PUBLIC_URL
+                  }
+                ]
+              }]
+            }
+          })
+        }
+      );
+
+      const result = await response.json().catch(() => ({}));
       whatsappSent = response.ok;
-      if (!response.ok) {
-        // Keep the registration; never expose provider credentials/errors to the visitor.
-        console.error("WhatsApp template send failed:", response.status);
-      }
+
+      console.log("WhatsApp API result:", {
+        httpStatus: response.status,
+        success: response.ok,
+        errorCode: result?.error?.code ?? null,
+        errorSubcode: result?.error?.error_subcode ?? null,
+        errorMessage: result?.error?.message ?? null,
+        errorDetails: result?.error?.error_data?.details ?? null
+      });
     } catch (e) {
-      console.error("WhatsApp send request failed.");
+      console.error("WhatsApp request exception:", String(e?.message || "Erro de rede"));
     }
+  } else {
+    console.error("WhatsApp não enviado: faltam variáveis obrigatórias.");
   }
+
+  // O cadastro continua salvo mesmo que o envio falhe.
+  return Response.json(
+    {
+      ok: true,
+      whatsapp_sent: whatsappSent,
+      whatsapp_configured: waConfigured
+    },
+    { status: 201 }
+  );
   return Response.json({ok:true, whatsapp_sent:whatsappSent, whatsapp_configured:waConfigured},{status:201});
 }
