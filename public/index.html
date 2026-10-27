@@ -50,7 +50,11 @@ input,select,textarea{width:100%;font:inherit;padding:13px 12px;border:1px solid
 <div class="actions"><button class="btn secondary" type="button" data-prev>Voltar</button><button class="btn primary" type="submit">QUERO RECEBER O E-BOOK</button></div>
 <div id="error" class="error" role="alert"></div></fieldset></div>
 </form></div>
-<div class="success" id="success" role="status"><h2>Cadastro confirmado! ❤️</h2><p>Obrigada pelo seu interesse no e-book <strong>Clínica Cheia, Faturamento Maior?</strong></p><p id="deliveryMessage">Seu cadastro foi recebido.</p><p>Verifique a caixa de entrada e o spam de seu e-mail.</p></div>
+<div class="success" id="success" role="status">
+  <h2>Cadastro confirmado! ❤️</h2>
+  <p id="deliveryMessage">Seu cadastro foi recebido e seu e-book já foi enviado 😊</p>
+  <p>Verifique a caixa de entrada e o spam de seu e-mail.</p>
+</div>
 </section></main>
 <script>
 const form=document.querySelector('#signup'),steps=[...document.querySelectorAll('.step')],bar=document.querySelector('#bar');let current=0;
