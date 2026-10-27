@@ -11,16 +11,26 @@ export async function onRequestPost({ request, env }) {
     );
   }
 
+  // Validar campos obrigatórios
   const required = [
-    "full_name", "whatsapp", "email", "city", "state",
-    "professional_role", "professional_training",
-    "advanced_aesthetics_postgrad", "clinic_duration",
-    "patients_per_month", "treatments_most_performed",
-    "clinic_ownership_role", "commercial_challenge", "main_goal"
+    "full_name",
+    "whatsapp",
+    "email",
+    "city",
+    "state",
+    "professional_role",
+    "professional_training",
+    "advanced_aesthetics_postgrad",
+    "clinic_duration",
+    "patients_per_month",
+    "treatments_most_performed",
+    "clinic_ownership_role",
+    "commercial_challenge",
+    "main_goal"
   ];
 
-  for (const k of required) {
-    if (!String(body[k] ?? "").trim()) {
+  for (const key of required) {
+    if (!String(body[key] ?? "").trim()) {
       return Response.json(
         { error: "Preencha todos os campos obrigatórios." },
         { status: 400 }
@@ -28,6 +38,7 @@ export async function onRequestPost({ request, env }) {
     }
   }
 
+  // Validar e-mail
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
     return Response.json(
       { error: "Informe um e-mail válido." },
@@ -35,6 +46,7 @@ export async function onRequestPost({ request, env }) {
     );
   }
 
+  // Validar WhatsApp
   const digits = String(body.whatsapp).replace(/\D/g, "");
 
   if (digits.length < 10 || digits.length > 15) {
@@ -51,6 +63,7 @@ export async function onRequestPost({ request, env }) {
     );
   }
 
+  // Salvar cadastro no banco de dados
   const sql = `INSERT INTO registrations
     (full_name,whatsapp,email,city,state,professional_role,
     professional_training,advanced_aesthetics_postgrad,
@@ -79,7 +92,11 @@ export async function onRequestPost({ request, env }) {
       body.commercial_consent ? 1 : 0
     ).run();
   } catch (e) {
-    console.error("Erro ao salvar cadastro:", String(e?.message || "Erro"));
+    console.error(
+      "Erro ao salvar cadastro:",
+      String(e?.message || "Erro")
+    );
+
     return Response.json(
       { error: "Não foi possível salvar o cadastro agora." },
       { status: 500 }
@@ -90,11 +107,18 @@ export async function onRequestPost({ request, env }) {
   let emailSent = false;
   let emailError = null;
 
-  const emailConfigurado = !!(
-  env.EMAILJS_SERVICE_ID &&
-  env.EMAILJS_TEMPLATE_ID &&
-  env.EMAILJS_PUBLIC_KEY
-);
+  const emailConfigured = Boolean(
+    env.EMAILJS_SERVICE_ID &&
+    env.EMAILJS_TEMPLATE_ID &&
+    env.EMAILJS_PUBLIC_KEY
+  );
+
+  console.log("EmailJS config:", {
+    configured: emailConfigured,
+    hasServiceId: Boolean(env.EMAILJS_SERVICE_ID),
+    hasTemplateId: Boolean(env.EMAILJS_TEMPLATE_ID),
+    hasPublicKey: Boolean(env.EMAILJS_PUBLIC_KEY)
+  });
 
   if (emailConfigured) {
     try {
@@ -110,8 +134,12 @@ export async function onRequestPost({ request, env }) {
             template_id: env.EMAILJS_TEMPLATE_ID,
             user_id: env.EMAILJS_PUBLIC_KEY,
             template_params: {
-              nome: String(body.full_name).trim().split(/\s+/)[0],
-              email: String(body.email).trim().toLowerCase()
+              nome: String(body.full_name)
+                .trim()
+                .split(/\s+/)[0],
+              email: String(body.email)
+                .trim()
+                .toLowerCase()
             }
           })
         }
@@ -130,16 +158,19 @@ export async function onRequestPost({ request, env }) {
       });
     } catch (e) {
       emailError = String(e?.message || "Erro de conexão");
+
       console.error("Erro no envio por e-mail:", emailError);
     }
   } else {
-    console.error("EmailJS: faltam variáveis de configuração.");
+    console.error(
+      "EmailJS não configurado: verifique as variáveis do Cloudflare."
+    );
   }
 
-  // Mantém o envio pelo WhatsApp independente do e-mail.
+  // Envio independente pelo WhatsApp
   let whatsappSent = false;
 
-  const waConfigured = !!(
+  const waConfigured = Boolean(
     env.WHATSAPP_TOKEN &&
     env.WHATSAPP_PHONE_NUMBER_ID &&
     env.WHATSAPP_TEMPLATE_NAME &&
@@ -148,7 +179,10 @@ export async function onRequestPost({ request, env }) {
 
   if (waConfigured) {
     try {
-      const phone = digits.startsWith("55") ? digits : `55${digits}`;
+      const phone = digits.startsWith("55")
+        ? digits
+        : `55${digits}`;
+
       const version = env.META_GRAPH_API_VERSION || "v23.0";
 
       const response = await fetch(
@@ -173,7 +207,9 @@ export async function onRequestPost({ request, env }) {
                 parameters: [
                   {
                     type: "text",
-                    text: String(body.full_name).trim().split(/\s+/)[0]
+                    text: String(body.full_name)
+                      .trim()
+                      .split(/\s+/)[0]
                   },
                   {
                     type: "text",
@@ -190,6 +226,7 @@ export async function onRequestPost({ request, env }) {
 
       if (!response.ok) {
         const result = await response.json().catch(() => ({}));
+
         console.log("WhatsApp API error:", {
           status: response.status,
           code: result?.error?.code ?? null,
@@ -197,10 +234,14 @@ export async function onRequestPost({ request, env }) {
         });
       }
     } catch (e) {
-      console.error("Erro no envio pelo WhatsApp:", String(e?.message || "Erro"));
+      console.error(
+        "Erro no envio pelo WhatsApp:",
+        String(e?.message || "Erro")
+      );
     }
   }
 
+  // O cadastro permanece salvo mesmo se algum envio falhar.
   return Response.json(
     {
       ok: true,
