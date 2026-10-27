@@ -11,7 +11,6 @@ export async function onRequestPost({ request, env }) {
     );
   }
 
-  // Validar campos obrigatórios
   const required = [
     "full_name",
     "whatsapp",
@@ -38,16 +37,16 @@ export async function onRequestPost({ request, env }) {
     }
   }
 
-  // Validar e-mail
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+  const email = String(body.email).trim().toLowerCase();
+  const fullName = String(body.full_name).trim();
+  const digits = String(body.whatsapp).replace(/\D/g, "");
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return Response.json(
       { error: "Informe um e-mail válido." },
       { status: 400 }
     );
   }
-
-  // Validar WhatsApp
-  const digits = String(body.whatsapp).replace(/\D/g, "");
 
   if (digits.length < 10 || digits.length > 15) {
     return Response.json(
@@ -56,14 +55,13 @@ export async function onRequestPost({ request, env }) {
     );
   }
 
-  if (String(body.full_name).length > 180) {
+  if (fullName.length > 180) {
     return Response.json(
       { error: "Confira os dados informados." },
       { status: 400 }
     );
   }
 
-  // Salvar cadastro no banco de dados
   const sql = `INSERT INTO registrations
     (full_name,whatsapp,email,city,state,professional_role,
     professional_training,advanced_aesthetics_postgrad,
@@ -74,9 +72,9 @@ export async function onRequestPost({ request, env }) {
 
   try {
     await env.DB.prepare(sql).bind(
-      String(body.full_name).trim(),
+      fullName,
       digits,
-      String(body.email).trim().toLowerCase(),
+      email,
       String(body.city).trim(),
       String(body.state).trim(),
       String(body.professional_role),
@@ -103,24 +101,19 @@ export async function onRequestPost({ request, env }) {
     );
   }
 
-  // Envio do e-book por e-mail via EmailJS
-  let emailSent = false;
-  let emailError = null;
-
   const emailConfigured = Boolean(
     env.EMAILJS_SERVICE_ID &&
     env.EMAILJS_TEMPLATE_ID &&
     env.EMAILJS_PUBLIC_KEY
   );
 
-  console.log("EmailJS config:", {
-    configured: emailConfigured,
-    hasServiceId: Boolean(env.EMAILJS_SERVICE_ID),
-    hasTemplateId: Boolean(env.EMAILJS_TEMPLATE_ID),
-    hasPublicKey: Boolean(env.EMAILJS_PUBLIC_KEY)
-  });
+  let emailSent = false;
 
-  if (emailConfigured) {
+  if (!emailConfigured) {
+    console.error(
+      "EmailJS não configurado: verifique as variáveis do Cloudflare."
+    );
+  } else {
     try {
       const response = await fetch(
         "https://api.emailjs.com/api/v1.0/email/send",
@@ -134,12 +127,8 @@ export async function onRequestPost({ request, env }) {
             template_id: env.EMAILJS_TEMPLATE_ID,
             user_id: env.EMAILJS_PUBLIC_KEY,
             template_params: {
-              nome: String(body.full_name)
-                .trim()
-                .split(/\s+/)[0],
-              email: String(body.email)
-                .trim()
-                .toLowerCase()
+              nome: fullName.split(/\s+/)[0],
+              email
             }
           })
         }
@@ -148,107 +137,31 @@ export async function onRequestPost({ request, env }) {
       emailSent = response.ok;
 
       if (!response.ok) {
-        emailError = (await response.text()).slice(0, 500);
-      }
+        const error = (await response.text()).slice(0, 500);
 
-      console.log("EmailJS result:", {
-        status: response.status,
-        success: emailSent,
-        error: emailError
-      });
-    } catch (e) {
-      emailError = String(e?.message || "Erro de conexão");
-
-      console.error("Erro no envio por e-mail:", emailError);
-    }
-  } else {
-    console.error(
-      "EmailJS não configurado: verifique as variáveis do Cloudflare."
-    );
-  }
-
-  // Envio independente pelo WhatsApp
-  let whatsappSent = false;
-
-  const waConfigured = Boolean(
-    env.WHATSAPP_TOKEN &&
-    env.WHATSAPP_PHONE_NUMBER_ID &&
-    env.WHATSAPP_TEMPLATE_NAME &&
-    env.EBOOK_PUBLIC_URL
-  );
-
-  if (waConfigured) {
-    try {
-      const phone = digits.startsWith("55")
-        ? digits
-        : `55${digits}`;
-
-      const version = env.META_GRAPH_API_VERSION || "v23.0";
-
-      const response = await fetch(
-        `https://graph.facebook.com/${version}/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${env.WHATSAPP_TOKEN}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            messaging_product: "whatsapp",
-            to: phone,
-            type: "template",
-            template: {
-              name: env.WHATSAPP_TEMPLATE_NAME,
-              language: {
-                code: env.WHATSAPP_TEMPLATE_LANGUAGE || "pt_BR"
-              },
-              components: [{
-                type: "body",
-                parameters: [
-                  {
-                    type: "text",
-                    text: String(body.full_name)
-                      .trim()
-                      .split(/\s+/)[0]
-                  },
-                  {
-                    type: "text",
-                    text: env.EBOOK_PUBLIC_URL
-                  }
-                ]
-              }]
-            }
-          })
-        }
-      );
-
-      whatsappSent = response.ok;
-
-      if (!response.ok) {
-        const result = await response.json().catch(() => ({}));
-
-        console.log("WhatsApp API error:", {
+        console.error("EmailJS result:", {
           status: response.status,
-          code: result?.error?.code ?? null,
-          message: result?.error?.message ?? null
+          error
+        });
+      } else {
+        console.log("EmailJS result:", {
+          status: response.status,
+          success: true
         });
       }
     } catch (e) {
       console.error(
-        "Erro no envio pelo WhatsApp:",
-        String(e?.message || "Erro")
+        "Erro no envio por e-mail:",
+        String(e?.message || "Erro de conexão")
       );
     }
   }
 
-  // O cadastro permanece salvo mesmo se algum envio falhar.
   return Response.json(
     {
       ok: true,
-      email_sent: emailSent,
       email_configured: emailConfigured,
-      whatsapp_sent: whatsappSent,
-      whatsapp_configured: waConfigured
+      email_sent: emailSent
     },
     { status: 201 }
   );
