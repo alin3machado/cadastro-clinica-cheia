@@ -90,11 +90,11 @@ export async function onRequestPost({ request, env }) {
   let emailSent = false;
   let emailError = null;
 
-  const emailConfigured = !!(
-    env.EMAILJS_SERVICE_ID &&
-    env.EMAILJS_TEMPLATE_ID &&
-    env.EMAILJS_PUBLIC_KEY
-  );
+  const emailConfigurado = !!(
+  env.EMAILJS_SERVICE_ID &&
+  env.EMAILJS_TEMPLATE_ID &&
+  env.EMAILJS_PUBLIC_KEY
+);
 
   if (emailConfigured) {
     try {
