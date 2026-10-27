@@ -27,7 +27,10 @@ export async function onRequestPost({ request, env }) {
         String(data[field]).trim() === ""
       ) {
         return Response.json(
-          { ok: false, error: `Campo obrigatório: ${field}` },
+          {
+            ok: false,
+            error: `Campo obrigatório: ${field}`
+          },
           { status: 400 }
         );
       }
@@ -58,7 +61,7 @@ export async function onRequestPost({ request, env }) {
       );
     }
 
-    // 1. Salvar o cadastro no banco D1.
+    // 1. Salvar cadastro no banco D1.
     await env.DB.prepare(`
       INSERT INTO registrations (
         full_name,
@@ -90,14 +93,16 @@ export async function onRequestPost({ request, env }) {
       String(data.clinic_duration).trim(),
       String(data.patients_per_month).trim(),
       String(data.treatments_most_performed).trim(),
-      data.ticket_medio ? String(data.ticket_medio).trim() : null,
+      data.ticket_medio
+        ? String(data.ticket_medio).trim()
+        : null,
       String(data.clinic_ownership_role).trim(),
       String(data.commercial_challenge).trim(),
       String(data.main_goal).trim(),
       data.commercial_consent ? 1 : 0
     ).run();
 
-    // 2. Verificar a configuração do EmailJS.
+    // 2. Verificar configuração do EmailJS.
     const emailConfigured = Boolean(
       env.EMAILJS_SERVICE_ID &&
       env.EMAILJS_TEMPLATE_ID &&
@@ -158,20 +163,14 @@ export async function onRequestPost({ request, env }) {
       emailError = "Variáveis do EmailJS não configuradas.";
     }
 
-    // 4. Responder com o resultado e o diagnóstico temporário.
+    // 4. Retornar resultado sem expor dados de diagnóstico da chave.
     return Response.json(
       {
         ok: true,
         email_configured: emailConfigured,
         email_sent: emailSent,
         email_status: emailStatus,
-        email_error: emailError,
-
-        // Diagnóstico temporário: não revela a chave.
-        private_key_exists: Boolean(env.EMAILJS_PRIVATE_KEY),
-        private_key_length: env.EMAILJS_PRIVATE_KEY
-          ? env.EMAILJS_PRIVATE_KEY.length
-          : 0
+        email_error: emailError
       },
       { status: 201 }
     );
