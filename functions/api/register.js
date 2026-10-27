@@ -108,7 +108,8 @@ export async function onRequestPost({ request, env }) {
   );
 
   let emailSent = false;
-
+let emailError = null;
+let emailStatus = null;
   if (!emailConfigured) {
     console.error(
       "EmailJS não configurado: verifique as variáveis do Cloudflare."
@@ -134,21 +135,20 @@ export async function onRequestPost({ request, env }) {
         }
       );
 
-      emailSent = response.ok;
+   
+emailStatus = response.status;
+emailSent = response.ok;
 
-      if (!response.ok) {
-        const error = (await response.text()).slice(0, 500);
+if (!response.ok) {
+  emailError = (await response.text()).slice(0, 500);
+}
 
-        console.error("EmailJS result:", {
-          status: response.status,
-          error
-        });
-      } else {
-        console.log("EmailJS result:", {
-          status: response.status,
-          success: true
-        });
-      }
+console.log("EmailJS result:", {
+  status: emailStatus,
+  success: emailSent,
+  error: emailError
+});
+
     } catch (e) {
       console.error(
         "Erro no envio por e-mail:",
@@ -160,8 +160,10 @@ export async function onRequestPost({ request, env }) {
   return Response.json(
     {
       ok: true,
-      email_configured: emailConfigured,
-      email_sent: emailSent
+  email_configured: emailConfigured,
+  email_sent: emailSent,
+  email_status: emailStatus,
+  email_error: emailError
     },
     { status: 201 }
   );
