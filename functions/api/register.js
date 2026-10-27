@@ -103,7 +103,12 @@ export async function onRequestPost({ request, env }) {
       env.EMAILJS_PUBLIC_KEY &&
       env.EMAILJS_PRIVATE_KEY
     );
-
+console.log("Verificação das variáveis EmailJS:", {
+  privateKeyExists: Boolean(env.EMAILJS_PRIVATE_KEY),
+  privateKeyLength: env.EMAILJS_PRIVATE_KEY
+    ? env.EMAILJS_PRIVATE_KEY.length
+    : 0
+});
     let emailSent = false;
     let emailStatus = null;
     let emailError = null;
