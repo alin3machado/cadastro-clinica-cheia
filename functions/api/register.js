@@ -1,3 +1,4 @@
+
 export async function onRequestPost({ request, env }) {
   try {
     const data = await request.json();
@@ -57,7 +58,7 @@ export async function onRequestPost({ request, env }) {
       );
     }
 
-    // 1. Salvar o cadastro no banco de dados D1.
+    // 1. Salvar o cadastro no banco D1.
     await env.DB.prepare(`
       INSERT INTO registrations (
         full_name,
@@ -96,19 +97,14 @@ export async function onRequestPost({ request, env }) {
       data.commercial_consent ? 1 : 0
     ).run();
 
-    // 2. Conferir se as configurações do EmailJS existem.
+    // 2. Verificar a configuração do EmailJS.
     const emailConfigured = Boolean(
       env.EMAILJS_SERVICE_ID &&
       env.EMAILJS_TEMPLATE_ID &&
       env.EMAILJS_PUBLIC_KEY &&
       env.EMAILJS_PRIVATE_KEY
     );
-console.log("Verificação das variáveis EmailJS:", {
-  privateKeyExists: Boolean(env.EMAILJS_PRIVATE_KEY),
-  privateKeyLength: env.EMAILJS_PRIVATE_KEY
-    ? env.EMAILJS_PRIVATE_KEY.length
-    : 0
-});
+
     let emailSent = false;
     let emailStatus = null;
     let emailError = null;
@@ -149,21 +145,33 @@ console.log("Verificação das variáveis EmailJS:", {
           error: emailError
         });
       } catch (error) {
-        emailError = String(error?.message || "Erro de conexão");
-        console.error("Erro no envio por e-mail:", emailError);
+        emailError = String(
+          error?.message || "Erro de conexão"
+        );
+
+        console.error(
+          "Erro no envio por e-mail:",
+          emailError
+        );
       }
     } else {
       emailError = "Variáveis do EmailJS não configuradas.";
     }
 
-    // 4. Retornar o resultado do cadastro e do envio.
+    // 4. Responder com o resultado e o diagnóstico temporário.
     return Response.json(
       {
         ok: true,
         email_configured: emailConfigured,
         email_sent: emailSent,
         email_status: emailStatus,
-        email_error: emailError
+        email_error: emailError,
+
+        // Diagnóstico temporário: não revela a chave.
+        private_key_exists: Boolean(env.EMAILJS_PRIVATE_KEY),
+        private_key_length: env.EMAILJS_PRIVATE_KEY
+          ? env.EMAILJS_PRIVATE_KEY.length
+          : 0
       },
       { status: 201 }
     );
